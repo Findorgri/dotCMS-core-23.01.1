@@ -1,0 +1,125 @@
+package com.dotmarketing.portlets.osgi.AJAX;
+
+import com.dotcms.api.web.HttpServletRequestThreadLocal;
+import com.dotmarketing.business.APILocator;
+import com.dotmarketing.cms.factories.PublicCompanyFactory;
+import com.dotmarketing.exception.DotRuntimeException;
+import com.dotmarketing.exception.DotSecurityException;
+import com.dotmarketing.servlets.ajax.AjaxAction;
+import com.dotmarketing.util.Logger;
+import com.dotmarketing.util.WebKeys;
+import com.liferay.portal.language.LanguageUtil;
+import com.liferay.portal.model.User;
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+abstract class OSGIBaseAJAX extends AjaxAction {
+
+    public boolean validateUser() {
+        HttpServletRequest req = HttpServletRequestThreadLocal.INSTANCE.getRequest();
+        User user = null;
+        try {
+            user = com.liferay.portal.util.PortalUtil.getUser(req);
+            if(user == null || !APILocator.getLayoutAPI().doesUserHaveAccessToPortlet("dynamic-plugins", user)){
+                throw new DotSecurityException("User does not have access to the Plugin Portlet");
+            }
+            return true;
+        } catch (Exception e) {
+            Logger.error(this, e.getMessage());
+            throw new DotRuntimeException (e.getMessage());
+        }
+    }
+    
+    
+    
+    
+	public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		if(System.getProperty(WebKeys.OSGI_ENABLED)==null){
+    		return ;
+    	}
+		
+		String cmd = request.getParameter("cmd");
+		java.lang.reflect.Method meth = null;
+		Class partypes[] = new Class[] { HttpServletRequest.class, HttpServletResponse.class };
+		Object arglist[] = new Object[] { request, response };
+		try {
+		    if(getUser()==null || !APILocator.getLayoutAPI().doesUserHaveAccessToPortlet("dynamic-plugins", getUser())){
+				response.sendError(401);
+				return;
+			}
+			
+			
+
+			meth = this.getClass().getMethod(cmd, partypes);
+
+		} catch (Exception e) {
+
+			try {
+				cmd = "action";
+				meth = this.getClass().getMethod(cmd, partypes);
+			} catch (Exception ex) {
+				Logger.error(this.getClass(), "Trying to run method:" + cmd);
+				Logger.error(this.getClass(), e.getMessage(), e.getCause());
+				writeError(response, e.getCause().getMessage());
+				return;
+			}
+		}
+		try {
+			meth.invoke(this, arglist);
+		} catch (Exception e) {
+			Logger.error(this, "Trying to run method:" + cmd);
+			Logger.error(this, e.getMessage(), e.getCause());
+			writeError(response, e.getCause().getMessage());
+		}
+
+	}
+
+	public void writeError(HttpServletResponse response, String error) throws IOException {
+		String ret = null;
+
+		try {
+			ret = LanguageUtil.get(getUser(), error);
+		} catch (Exception e) {
+
+		}
+		if (ret == null) {
+			try {
+				ret = LanguageUtil.get(PublicCompanyFactory.getDefaultCompanyId(), PublicCompanyFactory.getDefaultCompany().getLocale(),
+						error);
+			} catch (Exception e) {
+
+			}
+		}
+		if (ret == null) {
+			ret = error;
+		}
+		response.setContentType("text/plain");
+		response.getWriter().println("FAILURE: " + ret);
+	}
+	
+	public void writeSuccess(HttpServletResponse response, String success) throws IOException {
+		String ret = null;
+
+		try {
+			ret = LanguageUtil.get(getUser(), success);
+		} catch (Exception e) {
+
+		}
+		if (ret == null) {
+			try {
+				ret = LanguageUtil.get(PublicCompanyFactory.getDefaultCompanyId(), PublicCompanyFactory.getDefaultCompany().getLocale(),
+						success);
+			} catch (Exception e) {
+
+			}
+		}
+		if (ret == null) {
+			ret = success;
+		}
+		response.setContentType("text/plain");
+		response.getWriter().println("SUCCESS:" + success );
+	}
+}

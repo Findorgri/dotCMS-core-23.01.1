@@ -1,0 +1,15 @@
+@use "variables" as *;
+
+::ng-deep .p-breadcrumb {
+    ul li {
+        &:first-child a span.p-menuitem-text {
+            color: $black;
+            font-size: $font-size-large;
+            font-weight: $font-weight-regular-bold;
+        }
+
+        &:last-child a {
+            pointer-events: none;
+        }
+    }
+}

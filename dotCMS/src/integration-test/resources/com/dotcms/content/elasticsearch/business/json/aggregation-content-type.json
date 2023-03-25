@@ -1,0 +1,20 @@
+{
+  "query": {
+    "bool": {
+      "must": {
+        "term": {
+          "conHost": "REPLACE_WITH_HOST_ID"
+        }
+      }
+    }
+  },
+  "aggs" : {
+    "tag" : {
+      "terms" : {
+        "field" : "contentType_dotraw",
+        "size" : 100
+      }
+    }
+  },
+  "size":0
+}

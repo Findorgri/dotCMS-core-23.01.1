@@ -1,0 +1,11 @@
+{
+  "query": {
+    "bool": {
+      "must": {
+        "query_string" : {
+          "query" : "+contentType:REPLACE_WITH_BLOG_CONTENT_TYPE_VARNAME +REPLACE_WITH_BLOG_CONTENT_TYPE_VARNAME.body:pass~2"
+        }
+      }
+    }
+  }
+}

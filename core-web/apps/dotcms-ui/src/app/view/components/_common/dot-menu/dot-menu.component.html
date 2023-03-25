@@ -1,0 +1,17 @@
+<dot-icon-button
+    class="dot-menu__button"
+    *ngIf="float; else noFloat"
+    [icon]="icon || ''"
+    (click)="menu.toggle($event)"
+    float
+></dot-icon-button>
+
+<ng-template #noFloat>
+    <dot-icon-button
+        class="dot-menu__button"
+        [icon]="icon || ''"
+        (click)="toggle($event)"
+    ></dot-icon-button>
+</ng-template>
+
+<p-menu #menu [popup]="true" [model]="model" appendTo="body"></p-menu>

@@ -1,0 +1,16 @@
+@use "variables" as *;
+
+:host {
+    display: block;
+}
+
+::ng-deep .form__group {
+    .md-inputtext,
+    .p-inputtext {
+        width: 100%;
+    }
+}
+
+.p-field:nth-last-child(1n) {
+    margin-bottom: $spacing-7;
+}

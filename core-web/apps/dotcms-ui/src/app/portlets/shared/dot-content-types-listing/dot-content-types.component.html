@@ -1,0 +1,33 @@
+<dot-portlet-base>
+    <dot-listing-data-table
+        #listing
+        *ngIf="showTable"
+        [actionHeaderOptions]="actionHeaderOptions"
+        [actions]="rowActions"
+        [columns]="contentTypeColumns"
+        [paginatorExtraParams]="paginatorExtraParams"
+        (rowWasClicked)="editContentType($event)"
+        sortField="modDate"
+        sortOrder="DESC"
+        url="v1/contenttype"
+    >
+        <dot-base-type-selector
+            *ngIf="!filterBy"
+            (selected)="changeBaseTypeSelector($event)"
+        ></dot-base-type-selector>
+    </dot-listing-data-table>
+
+    <dot-add-to-bundle
+        *ngIf="addToBundleIdentifier"
+        [assetIdentifier]="addToBundleIdentifier"
+        (cancel)="addToBundleIdentifier = null"
+    ></dot-add-to-bundle>
+
+    <dot-add-to-menu
+        *ngIf="addToMenuContentType"
+        [contentType]="addToMenuContentType"
+        (cancel)="addToMenuContentType = null"
+    ></dot-add-to-menu>
+
+    <ng-template #dotDynamicDialog></ng-template>
+</dot-portlet-base>

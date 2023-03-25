@@ -1,0 +1,5 @@
+#parse( "static/storyblock/render.vtl" )
+
+<ol style="text-align: $!item.attrs.textAlign">
+    #renderContentBlock($!item.content)
+</ol>

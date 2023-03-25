@@ -1,0 +1,52 @@
+package com.dotmarketing.business;
+
+import com.dotcms.util.ConversionUtils;
+import com.dotcms.util.transform.DBTransformer;
+import com.dotcms.variant.VariantAPI;
+import com.dotmarketing.portlets.contentlet.model.Contentlet;
+import com.dotmarketing.portlets.contentlet.model.ContentletVersionInfo;
+import com.dotmarketing.util.UtilMethods;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * DBTransformer that converts DB objects into {@link ContentletVersionInfo} instances
+ */
+public class ContentletVersionInfoTransformer implements DBTransformer<ContentletVersionInfo> {
+    final List<ContentletVersionInfo> list;
+
+
+    public ContentletVersionInfoTransformer(List<Map<String, Object>> initList){
+        List<ContentletVersionInfo> newList = new ArrayList<>();
+        if (initList != null){
+            for(Map<String, Object> map : initList){
+                newList.add(transform(map));
+            }
+        }
+
+        this.list = newList;
+    }
+
+    @Override
+    public List<ContentletVersionInfo> asList() {
+        return this.list;
+    }
+
+    @NotNull
+    private static ContentletVersionInfo transform(Map<String, Object> map)  {
+        final ContentletVersionInfo versionInfo = new ContentletVersionInfo();
+        versionInfo.setIdentifier((String) map.get("identifier"));
+        versionInfo.setLang(ConversionUtils.toLong(map.get("lang"), 0L));
+        versionInfo.setWorkingInode((String) map.get("working_inode"));
+        versionInfo.setLiveInode((String) map.get("live_inode"));
+        versionInfo.setDeleted(ConversionUtils.toBooleanFromDb(map.get("deleted")));
+        versionInfo.setLockedBy((String) map.get("locked_by"));
+        versionInfo.setLockedOn((Date) map.get("locked_on"));
+        versionInfo.setVersionTs((Date) map.get("version_ts"));
+        versionInfo.setVariant(map.get("variant_id").toString());
+        return versionInfo;
+    }
+}

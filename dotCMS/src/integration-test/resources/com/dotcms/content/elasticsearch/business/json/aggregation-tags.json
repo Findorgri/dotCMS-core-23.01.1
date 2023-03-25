@@ -1,0 +1,16 @@
+{
+  "query": {
+    "query_string": {
+      "query": "+contenttype:REPLACE_WITH_NEWS_CONTENT_TYPE_VARNAME"
+    }
+  },
+  "aggs" : {
+    "tag" : {
+      "terms" : {
+        "field": "tags",
+        "size" : 20
+      }
+    }
+  },
+  "size":0
+}
